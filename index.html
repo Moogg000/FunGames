@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="FunGames —— 一个纯前端 HTML5 小游戏合集，无需下载，所有进度都保存在浏览器里。" />
+  <meta name="theme-color" content="#0e1117" />
+  <title>FunGames · HTML5 小游戏合集</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎮%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="page page--home">
+    <header class="home-hero">
+      <div class="home-hero__row">
+        <div class="home-hero__logo" aria-hidden="true">🎮</div>
+        <div class="home-hero__text">
+          <h1>FunGames</h1>
+          <p>一个 HTML5 小游戏合集。无需注册、无需下载，所有内容都在你的浏览器里运行，进度自动保存在本地。</p>
+        </div>
+      </div>
+
+      <div class="home-tools">
+        <label class="search">
+          <span class="search__icon" aria-hidden="true">🔍</span>
+          <input id="game-filter" type="search" placeholder="筛选游戏…" autocomplete="off" aria-label="筛选游戏" />
+        </label>
+        <p class="game-count" id="game-count" aria-live="polite"></p>
+      </div>
+    </header>
+
+    <main class="home-main">
+      <div class="game-grid" id="game-list"></div>
+      <div class="empty-state" id="empty-state" hidden>
+        <div class="empty-state__icon" aria-hidden="true">🕹️</div>
+        <h2>没有符合条件的游戏</h2>
+        <p>换个关键词试试，或者清空筛选条件。</p>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        使用原生 HTML、CSS 和 JavaScript 构建 ·
+        进度通过 <code>localStorage</code> 保存在浏览器中
+      </p>
+      <p class="site-footer__hint">点击卡片即可开始 · 支持触屏、鼠标和键盘</p>
+    </footer>
+  </div>
+
+  <noscript>
+    <div class="noscript-note">
+      <strong>需要启用 JavaScript。</strong>FunGames 是纯前端的 HTML5 小游戏合集，开启 JavaScript 后才能正常游玩。
+    </div>
+  </noscript>
+
+  <script src="js/storage.js"></script>
+  <script src="js/manifest.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

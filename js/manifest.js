@@ -64,5 +64,77 @@ window.FUN_GAMES = [
         return Number(v).toLocaleString('zh-CN');
       }
     }
+  },
+  {
+    id: 'snake',
+    title: '贪吃蛇',
+    description: '吃食物不断变长，别撞墙、别咬到自己。',
+    icon: '🐍',
+    href: 'games/snake.html',
+    tags: ['街机', '经典', '反应'],
+    best: {
+      label: '最高分数',
+      // 贪吃蛇按速度分别保存：snake:best:slow / normal / fast。
+      // 首页卡片展示所有速度中最高的一次。
+      read: function () {
+        var names = { slow: '慢速', normal: '标准', fast: '快速' };
+        var best = null;
+        ['slow', 'normal', 'fast'].forEach(function (id) {
+          var value = FunGamesStorage.get('snake:best:' + id, null);
+          if (typeof value === 'number' && (best === null || value > best.value)) {
+            best = { value: value, name: names[id] };
+          }
+        });
+        return best;
+      },
+      format: function (v) {
+        return Number(v.value).toLocaleString('zh-CN') + ' · ' + v.name;
+      }
+    }
+  },
+  {
+    id: 'tetris',
+    title: '俄罗斯方块',
+    description: '堆叠方块、消除整行，挑战更高分。',
+    icon: '🧱',
+    href: 'games/tetris.html',
+    tags: ['益智', '经典', '街机'],
+    best: {
+      key: 'tetris:best',
+      label: '最高分数',
+      format: function (v) {
+        return Number(v).toLocaleString('zh-CN');
+      }
+    }
+  },
+  {
+    id: 'tictactoe',
+    title: '井字棋',
+    description: '和 AI 对弈三子连线，挑战最长连胜。',
+    icon: '⭕',
+    href: 'games/tictactoe.html',
+    tags: ['益智', '经典', '对战', 'AI'],
+    best: {
+      key: 'tictactoe:best',
+      label: '最高连胜',
+      format: function (v) {
+        return v + ' 场';
+      }
+    }
+  },
+  {
+    id: 'gomoku',
+    title: '五子棋',
+    description: '25 路棋盘，和 AI 对弈五子连珠。',
+    icon: '⚫',
+    href: 'games/gomoku.html',
+    tags: ['益智', '经典', '对战', 'AI'],
+    best: {
+      key: 'gomoku:best',
+      label: '最高连胜',
+      format: function (v) {
+        return v + ' 场';
+      }
+    }
   }
 ];

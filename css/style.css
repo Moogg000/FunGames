@@ -888,6 +888,402 @@ code {
   width: min(100%, 440px);
 }
 
+/* ==========================================================================
+   Snake
+   ========================================================================== */
+
+.snake {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+/* 分数面板与棋盘等宽，视觉上更紧凑，不会在宽屏幕上被拉得很长。 */
+.snake .panel {
+  width: min(100%, 440px);
+}
+
+.snake__stage {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.snake__board {
+  display: grid;
+  grid-template-columns: repeat(20, 1fr);
+  grid-template-rows: repeat(20, 1fr);
+  gap: 1px;
+  width: min(100%, 440px);
+  aspect-ratio: 1 / 1;
+  padding: 6px;
+  border-radius: var(--radius);
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  touch-action: none;
+  user-select: none;
+  overflow: hidden;
+}
+
+.snake__cell {
+  border-radius: 2px;
+  background: var(--surface);
+}
+
+.snake__cell--body {
+  background: var(--success);
+  border-radius: 3px;
+}
+
+.snake__cell--head {
+  background: var(--accent);
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px var(--accent-strong);
+}
+
+.snake__cell--food {
+  background: var(--danger);
+  border-radius: 50%;
+  animation: snake-food-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes snake-food-pulse {
+  0%, 100% { transform: scale(0.82); }
+  50% { transform: scale(1); }
+}
+
+.snake__pad {
+  display: grid;
+  grid-template-columns: repeat(4, 46px);
+  grid-template-rows: repeat(2, 46px);
+  gap: 8px;
+  justify-content: center;
+}
+
+.snake__pad .btn {
+  min-height: 0;
+  padding: 0;
+  font-size: 1.1rem;
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.snake__pad .btn:hover { background: var(--surface-3); }
+
+/* Show the on-screen pad on touch devices / narrow screens. */
+@media (hover: hover) and (pointer: fine) and (min-width: 620px) {
+  .snake__pad { display: none; }
+}
+
+/* ==========================================================================
+   Tetris
+   ========================================================================== */
+
+.tetris {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.tetris .panel {
+  width: min(100%, 440px);
+}
+
+.tetris__mid {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.tetris__mid .panel__hint {
+  flex: 1;
+}
+
+.tetris__next {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  flex: none;
+}
+
+.tetris__next-title {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.tetris__next-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 18px);
+  grid-template-rows: repeat(4, 18px);
+  gap: 2px;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.tetris__mini {
+  border-radius: 2px;
+  background: var(--surface-3);
+}
+
+.tetris__stage {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tetris__board {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(20, 1fr);
+  gap: 1px;
+  width: min(100%, 320px, 30vh);
+  aspect-ratio: 1 / 2;
+  padding: 6px;
+  border-radius: var(--radius);
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  touch-action: none;
+  user-select: none;
+  overflow: hidden;
+}
+
+.tetris__cell {
+  border-radius: 2px;
+  background: var(--surface-2);
+}
+
+.tetris__cell--ghost {
+  background: var(--surface);
+  box-shadow: inset 0 0 0 2px var(--border);
+}
+
+.tetris__cell--1, .tetris__mini--1 { background: #2f9fd8; }
+.tetris__cell--2, .tetris__mini--2 { background: #f2c230; }
+.tetris__cell--3, .tetris__mini--3 { background: #a25fd8; }
+.tetris__cell--4, .tetris__mini--4 { background: #3fbf6f; }
+.tetris__cell--5, .tetris__mini--5 { background: #e05a4e; }
+.tetris__cell--6, .tetris__mini--6 { background: #3a6de0; }
+.tetris__cell--7, .tetris__mini--7 { background: #e88b2a; }
+
+.tetris__pad {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.tetris__pad .btn {
+  min-width: 52px;
+  min-height: 46px;
+  font-size: 1.05rem;
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.tetris__pad .btn:hover { background: var(--surface-3); }
+
+/* Show the on-screen pad on touch devices / narrow screens. */
+@media (hover: hover) and (pointer: fine) and (min-width: 620px) {
+  .tetris__pad { display: none; }
+}
+
+/* ==========================================================================
+   Tic-tac-toe
+   ========================================================================== */
+
+.ttt {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.ttt .panel {
+  width: min(100%, 440px);
+}
+
+.ttt__stage {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ttt__board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: min(100%, 340px);
+  padding: 6px;
+  border-radius: var(--radius);
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  user-select: none;
+}
+
+.ttt__cell {
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  font-size: clamp(2rem, 9vw, 2.8rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.12s ease, transform 0.06s ease;
+}
+
+.ttt__cell:hover:not(:disabled) { background: var(--surface-3); }
+.ttt__cell:active:not(:disabled) { transform: scale(0.95); }
+.ttt__cell:disabled { cursor: default; }
+
+.ttt__cell--x { color: var(--accent); }
+.ttt__cell--o { color: var(--danger); }
+
+.ttt__cell--win {
+  background: var(--success);
+  border-color: var(--success);
+  color: #fff;
+}
+
+/* ==========================================================================
+   Gomoku
+   ========================================================================== */
+
+.gomoku {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.gomoku .panel {
+  width: min(100%, 440px);
+}
+
+.gomoku__stage {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gomoku__board-scroll {
+  width: 100%;
+  overflow: auto;
+  padding: 4px 2px 10px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.gomoku__board {
+  display: grid;
+  grid-template-columns: repeat(25, 1fr);
+  width: max(420px, min(100%, 620px));
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-2);
+  background-image:
+    linear-gradient(to right, var(--border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+  background-size: calc(100% / 25) calc(100% / 25);
+  box-shadow: var(--shadow-sm);
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.gomoku__cell {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.gomoku__cell:disabled {
+  cursor: default;
+}
+
+/* 棋子 */
+.gomoku__cell--b::before,
+.gomoku__cell--w::before {
+  content: '';
+  position: absolute;
+  inset: 10%;
+  border-radius: 50%;
+  transition: transform 0.08s ease;
+}
+
+.gomoku__cell--b::before {
+  background: #1d2431;
+  box-shadow: inset -1px -2px 3px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.gomoku__cell--w::before {
+  background: #f3f5fa;
+  box-shadow: 0 0 0 1px var(--border), inset -1px -2px 3px rgba(0, 0, 0, 0.2),
+    0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.gomoku__cell:not(:disabled):hover::before {
+  transform: scale(1.06);
+}
+
+/* 最后一手标记 */
+.gomoku__cell--last::after {
+  content: '';
+  position: absolute;
+  inset: 40%;
+  border-radius: 50%;
+  background: var(--danger);
+}
+
+.gomoku__cell--last.gomoku__cell--w::after {
+  background: var(--danger);
+}
+
+/* 五连高亮 */
+.gomoku__cell--win::before {
+  box-shadow: 0 0 0 2px var(--success), 0 0 10px var(--success);
+}
+
+/* 键盘光标 */
+.gomoku__cell--cursor::after {
+  content: '';
+  position: absolute;
+  inset: 4%;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  box-sizing: border-box;
+}
+
+.gomoku__board:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 /* ---------- Responsive tuning ---------- */
 
 @media (max-width: 560px) {
@@ -906,6 +1302,21 @@ code {
     grid-template-rows: repeat(2, 44px);
     gap: 6px;
   }
+  .snake { gap: 10px; }
+  .snake .panel { padding: 12px; gap: 10px; }
+  .snake__board { padding: 4px; }
+  .snake__pad {
+    grid-template-columns: repeat(4, 44px);
+    grid-template-rows: repeat(2, 44px);
+    gap: 6px;
+  }
+  .tetris { gap: 10px; }
+  .tetris .panel { padding: 12px; gap: 10px; }
+  .tetris__board { padding: 4px; }
+  .tetris__pad .btn { min-width: 48px; min-height: 42px; }
+  .ttt__board { padding: 4px; gap: 6px; }
+  .gomoku { gap: 10px; }
+  .gomoku .panel { padding: 12px; gap: 10px; }
 }
 
 @media (max-width: 360px) {

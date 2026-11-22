@@ -55,26 +55,6 @@ php -S localhost:8000
 
 ---
 
-## 🌐 部署到 GitHub Pages
-
-1. 在 GitHub 上新建一个仓库，把本目录的内容推送到 `main` 分支（本项目只有 `main` 一个分支）：
-
-   ```bash
-   git remote add origin https://github.com/<你>/<仓库名>.git
-   git push -u origin main
-   ```
-
-2. 打开仓库的 **Settings → Pages**。
-3. 在 **Build and deployment → Source** 选择 **Deploy from a branch**。
-4. 分支选 **`main`**，目录选 **`/ (root)`**，点击 **Save**。
-5. 等待约一分钟，站点就会上线：`https://<你>.github.io/<仓库名>/`。
-
-不需要配置任何 CI：所有文件都是原样托管，根目录的 `index.html` 会自动成为首页。
-
-> 自定义域名和 HTTPS 也在同一个 Settings → Pages 页面里设置，本仓库不需要做任何改动。
-
----
-
 ## 🗂 目录结构
 
 ```

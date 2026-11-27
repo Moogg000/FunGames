@@ -364,7 +364,7 @@
     paint();
 
     Engine.chooseMoveAsync(state.board, state.difficulty, {
-      timeBudget: 1000,
+      timeBudget: 1500,
       maxDepth: 5
     }, function (move) {
       if (token !== aiToken) return;   // 已经重新开局，结果作废

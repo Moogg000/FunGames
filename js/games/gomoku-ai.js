@@ -43,8 +43,9 @@
 
   var WEIGHTS = {
     attack: 1.0,     // 进攻权重
-    defense: 0.9,    // 防守权重
-    easyNoise: 800   // 简单档随机扰幅
+    defense: 0.9,     // 防守权重
+    easyBlind: 0.25,  // 简单档：只看到自己进攻、忽略对手威胁的概率
+    easyPool: 3       // 简单档：在前几名的候选里挑选的范围
   };
 
   var CANDIDATE_RANGE = 2;
@@ -558,8 +559,12 @@
   }
 
   /*
-   * 简单档：一步启发式。
-   * score = 进攻分（我方下这里） + 防守分（对手下这里）× DEFENSE_W + 随机扰动
+   * 简单档：会犯错的初学者。
+   *
+   * 它同样用「进攻 + 防守」的一步启发式来给候选排序，但有两处刻意的不完美：
+   *   1) 以 easyBlind 的概率「看不见对手的威胁」，只按自己的进攻分挑棋
+   *      —— 于是会漏堵活三、冲四，给玩家机会；
+   *   2) 即便正常行棋，也在前 easyPool 名里按名次衰减挑选，而不是永远走最优。
    * player 默认是 AI，测试时也可以传 HUMAN 来模拟人类方的同等策略。
    */
   function chooseEasy(board, random, player) {
@@ -569,23 +574,42 @@
     var cands = candidateMoves(board);
     if (!cands.length) return -1;
 
-    var best = -Infinity;
-    var bestMoves = [];
+    var scored = [];
     for (var i = 0; i < cands.length; i++) {
       var idx = cands[i];
       var attack = moveHeuristic(board, idx, me);
       var defense = moveHeuristic(board, idx, opp);
-      var score = attack * WEIGHTS.attack + defense * WEIGHTS.defense;
-      score += (rng() - 0.5) * 2 * WEIGHTS.easyNoise;
-
-      if (score > best) {
-        best = score;
-        bestMoves = [idx];
-      } else if (score === best) {
-        bestMoves.push(idx);
-      }
+      scored.push({
+        idx: idx,
+        attack: attack,
+        total: attack * WEIGHTS.attack + defense * WEIGHTS.defense
+      });
     }
-    return bestMoves[Math.floor(rng() * bestMoves.length)];
+
+    // 失误模式：只看到自己的进攻，忽略对手威胁。
+    if (rng() < WEIGHTS.easyBlind) {
+      scored.sort(function (a, b) { return b.attack - a.attack; });
+      var blindTop = Math.min(scored.length, WEIGHTS.easyPool);
+      return scored[Math.floor(rng() * blindTop)].idx;
+    }
+
+    scored.sort(function (a, b) { return b.total - a.total; });
+
+    // 前几名里按 1/(1+k) 的权重挑选：最优着法概率最高，但不保证每次都走。
+    var pool = Math.min(scored.length, WEIGHTS.easyPool);
+    var weights = [];
+    var sum = 0;
+    for (var k = 0; k < pool; k++) {
+      var w = 1 / (1 + k);
+      weights.push(w);
+      sum += w;
+    }
+    var pick = rng() * sum;
+    for (var j = 0; j < pool; j++) {
+      pick -= weights[j];
+      if (pick <= 0) return scored[j].idx;
+    }
+    return scored[0].idx;
   }
 
   /* 困难档：固定层数的 Alpha-Beta（同步，主要用于测试与对比）。 */

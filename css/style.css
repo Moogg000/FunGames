@@ -1284,6 +1284,103 @@ code {
   outline-offset: 2px;
 }
 
+/* ==========================================================================
+   Klotski (sliding number puzzle)
+   ========================================================================== */
+
+.kp {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.kp .panel {
+  width: min(100%, 440px);
+}
+
+.kp__stage {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.kp__board-wrap {
+  width: 100%;
+  overflow: auto;
+  padding: 4px 2px 10px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.kp__board {
+  position: relative;
+  width: max(300px, min(100%, 440px));
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  touch-action: none;
+  user-select: none;
+  outline: none;
+}
+
+.kp__board:focus-visible {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.kp__cell {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(100% / var(--n));
+  height: calc(100% / var(--n));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  font-size: calc(min(100vw, 440px) / var(--n) * 0.32);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  color: var(--text);
+  cursor: pointer;
+  transition: transform 0.16s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.kp__cell--blank {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  cursor: default;
+}
+
+.kp__cell--ok {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.kp__cell--hint {
+  background: var(--warning);
+  border-color: var(--warning);
+  color: #fff;
+  box-shadow: 0 0 0 2px var(--warning), 0 0 12px rgba(201, 138, 22, 0.55);
+}
+
+.kp__cell--win {
+  background: var(--success);
+  border-color: var(--success);
+  color: #fff;
+  box-shadow: 0 0 0 2px var(--success), 0 0 12px rgba(43, 148, 87, 0.5);
+}
+
 /* ---------- Responsive tuning ---------- */
 
 @media (max-width: 560px) {

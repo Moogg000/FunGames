@@ -301,10 +301,23 @@
     return m + ':' + pad(sec);
   }
 
+  /*
+   * formatClock — 毫秒 -> "m:ss.d"（精确到 0.1 秒），用于计分类纪录。
+   */
+  function formatClock(ms) {
+    var total = Math.max(0, Math.round(ms || 0));
+    var d = Math.floor(total / 100) % 10;
+    var s = Math.floor(total / 1000);
+    var m = Math.floor(s / 60);
+    var sec = s % 60;
+    return m + ':' + (sec < 10 ? '0' : '') + sec + '.' + d;
+  }
+
   global.FunGamesUI = {
     el: el,
     createPage: createPage,
     onSwipe: onSwipe,
-    formatTime: formatTime
+    formatTime: formatTime,
+    formatClock: formatClock
   };
 })(window);

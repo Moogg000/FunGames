@@ -136,5 +136,31 @@ window.FUN_GAMES = [
         return v + ' 场';
       }
     }
+  },
+  {
+    id: 'klotski',
+    title: '数字华容道',
+    description: '打乱数字方块，复原为 1…N，求解器支持单步提示与一键演示。',
+    icon: '🧩',
+    href: 'games/klotski.html',
+    tags: ['益智', '经典', '滑块', 'AI'],
+    best: {
+      label: '最短时间',
+      // 三个尺寸的用时不可比，首页卡片展示「其中最好的一成绩 + 它是几乘几」。
+      read: function () {
+        var names = { 3: '3×3', 4: '4×4', 5: '5×5' };
+        var best = null;
+        [3, 4, 5].forEach(function (n) {
+          var value = FunGamesStorage.get('klotski:best:' + n, null);
+          if (typeof value === 'number' && (best === null || value < best.value)) {
+            best = { value: value, size: names[n] };
+          }
+        });
+        return best;
+      },
+      format: function (v) {
+        return FunGamesUI.formatClock(v.value) + ' · ' + v.size;
+      }
+    }
   }
 ];

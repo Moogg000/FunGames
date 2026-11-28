@@ -12,6 +12,8 @@
  *   - 键盘、触屏和鼠标输入都要支持。
  *   - 最高分：开局时调用 page.beginRun()，成绩变化时调用 page.setBest(value)。
  *     框架会自动实时刷新徽章，并在打破纪录时弹出不遮挡操作的提示。
+ *   - 续玩（硬性要求）：未完成的对局必须存进 <id>:state，玩家点「←」退回首页
+ *     或刷新页面后再进来要能接着玩。规则细节见 README「存档与续玩规则」。
  */
 (function (global) {
   'use strict';
@@ -66,6 +68,7 @@
     score += 1;
     statusEl.textContent = '分数：' + score;
     if (score > 0) page.setBest(score);
+    save();          // 每次有意义的变动都要立刻落盘（关键时刻之外可节流）
   });
 
   page.main.appendChild(panel);
@@ -74,8 +77,16 @@
   // 把页面框架挂到页面上。FunGames 的每个页面都有 <div id="app">。
   document.getElementById('app').appendChild(page.root);
 
-  /* 3. 游戏状态 --------------------------------------------------------------
-   * 当前这一局放在内存里，同时同步进 localStorage，这样刷新页面不会丢进度。
+  /* 3. 游戏状态（续玩）--------------------------------------------------------
+   * 硬性要求：玩家玩到一半退出（点标题栏「←」回首页、刷新、关标签页），
+   * 再从首页进来必须回到同一个局面。
+   *
+   *   save()    每次有意义的变动后立刻调用（实时类游戏再加节流定时保存）
+   *   load()    读档 + 校验；数据不合法就返回 false，让外层开新局
+   *   reset()   开一局新的
+   *   finish()  对局结束（胜利 / 失败 / 通关）时删档，避免留下终局
+   *
+   * 启动流程固定写成：if (!load()) reset();
    */
   function save() {
     Storage.set(STATE_KEY, { score: score });
@@ -83,7 +94,7 @@
 
   function load() {
     var data = Storage.get(STATE_KEY, null);
-    if (!data || typeof data.score !== 'number') return false;
+    if (!data || typeof data.score !== 'number') return false;   // 坏档 -> 重新开一局
     score = data.score;
     statusEl.textContent = '分数：' + score;
     return true;
@@ -95,6 +106,13 @@
     // 告知框架「新的一局开始了」，破纪录提示会以这一局开始时的成绩为基准。
     page.beginRun();
     save();
+  }
+
+  // 对局结束：删掉存档，下次进来就是干净的一局。
+  // （别忘了同时停掉你自己的计时器 / 游戏循环）
+  function finish() {
+    Storage.remove(STATE_KEY);
+    statusEl.textContent = '本局结束';
   }
 
   page.onNewGame(reset);

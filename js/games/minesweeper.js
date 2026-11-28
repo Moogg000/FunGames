@@ -8,12 +8,15 @@
  *   - "Flag mode" toggle ...... every tap flags (useful on small screens)
  *
  * The first click is always safe. Best time is stored per difficulty in
- * localStorage under "fungames:minesweeper:best".
+ * localStorage under "fungames:minesweeper:best"; unfinished boards are kept
+ * under "fungames:minesweeper:state" so leaving and coming back resumes the
+ * same game (finished games leave no save behind).
  */
 (function (global) {
   'use strict';
 
   var UI = global.FunGamesUI;
+  var Storage = global.FunGamesStorage;
 
   var DIFFICULTIES = [
     { id: 'beginner', label: '初级', rows: 9, cols: 9, mines: 10 },
@@ -22,6 +25,9 @@
   ];
 
   var LONG_PRESS_MS = 380;
+
+  // 未完成对局的存档键。已结束（胜利 / 踩雷）的对局不保留，下次进来开新局。
+  var SAVE_KEY = 'minesweeper:state';
 
   // 当前难度对应的存储键。createPage() 的 storageKey 支持函数，
   // 这样切换难度时，标题栏徽章会自动显示该难度的最佳时间。
@@ -141,10 +147,10 @@
     return out;
   }
 
-  function startTimer() {
+  function startTimer(fromSeconds) {
     stopTimer();
-    state.seconds = 0;
-    timeEl.textContent = UI.formatTime(0);
+    state.seconds = fromSeconds || 0;
+    timeEl.textContent = UI.formatTime(state.seconds);
     state.timerId = setInterval(function () {
       state.seconds++;
       timeEl.textContent = UI.formatTime(state.seconds);
@@ -197,6 +203,80 @@
     buildBoard();
     page.beginRun();
     page.renderBest(page.getBest());
+  }
+
+  /* ---------- 存档（退出再进入可续玩） ---------- */
+
+  /*
+   * 只保存「未完成」的对局。结束时（胜利或踩雷）会删掉存档，
+   * 这样下次从首页进来就是干净的一局，而不是一个已经翻开的终局。
+   */
+  function save() {
+    if (state.over) return;
+    Storage.set(SAVE_KEY, {
+      v: 1,
+      difficulty: state.difficulty.id,
+      rows: state.rows,
+      cols: state.cols,
+      mines: state.mines,
+      flags: state.flags,
+      opened: state.opened,
+      seconds: state.seconds,
+      firstClick: state.firstClick,
+      grid: state.grid.map(function (c) {
+        return [c.mine ? 1 : 0, c.open ? 1 : 0, c.flag ? 1 : 0, c.adj];
+      })
+    });
+  }
+
+  function discardSave() {
+    Storage.remove(SAVE_KEY);
+  }
+
+  function loadState() {
+    var d = Storage.get(SAVE_KEY, null);
+    if (!d || d.v !== 1) return false;
+
+    var diff = DIFFICULTIES.filter(function (x) { return x.id === d.difficulty; })[0];
+    if (!diff) return false;
+    if (d.rows !== diff.rows || d.cols !== diff.cols || d.mines !== diff.mines) return false;
+    var total = diff.rows * diff.cols;
+    if (!Array.isArray(d.grid) || d.grid.length !== total) return false;
+    for (var i = 0; i < d.grid.length; i++) {
+      if (!Array.isArray(d.grid[i]) || d.grid[i].length !== 4) return false;
+    }
+
+    state.difficulty = diff;
+    currentDifficultyId = diff.id;
+    state.rows = diff.rows;
+    state.cols = diff.cols;
+    state.mines = diff.mines;
+    state.firstClick = !!d.firstClick;
+    state.over = false;
+    state.won = false;
+    state.flags = typeof d.flags === 'number' ? d.flags : 0;
+    state.opened = typeof d.opened === 'number' ? d.opened : 0;
+    state.seconds = typeof d.seconds === 'number' ? d.seconds : 0;
+    state.flagMode = false;
+    state.grid = d.grid.map(function (g) {
+      return { mine: !!g[0], open: !!g[1], flag: !!g[2], adj: g[3] | 0 };
+    });
+
+    flagModeBtn.setAttribute('aria-pressed', 'false');
+    Object.keys(diffButtons).forEach(function (id) {
+      diffButtons[id].setAttribute('aria-pressed', String(id === diff.id));
+    });
+
+    hideOverlay();
+    buildBoard();
+    page.beginRun();
+    page.renderBest(page.getBest());
+
+    minesLeftEl.textContent = String(Math.max(0, state.mines - state.flags));
+    // 还没首击就还没起表；否则从存档的秒数继续计时。
+    if (!state.firstClick) startTimer(state.seconds);
+
+    return true;
   }
 
   function buildBoard() {
@@ -299,6 +379,7 @@
 
     paintAll();
     checkWin();
+    save();
   }
 
   function toggleFlag(index) {
@@ -310,6 +391,7 @@
     state.flags += cell.flag ? 1 : -1;
     minesLeftEl.textContent = String(state.mines - state.flags);
     paintCell(index);
+    save();
   }
 
   function handlePrimary(index) {
@@ -335,6 +417,7 @@
     }
     minesLeftEl.textContent = '0';
     paintAll();
+    discardSave();          // 已结束，不留存档，下次进来开新局
 
     var isRecord = page.setBest(state.seconds);
     showOverlay({
@@ -355,6 +438,7 @@
       if (state.grid[i].mine) state.grid[i].open = true;
     }
     paintAll();
+    discardSave();          // 已结束，不留存档
 
     var boom = board.querySelector('[data-index="' + boomIndex + '"]');
     if (boom) boom.classList.add('ms-cell--boom');
@@ -511,5 +595,8 @@
     newGame(state.difficulty.id);
   });
 
-  newGame(DIFFICULTIES[0].id);
+  // 优先恢复未完成的对局；没有存档才开新局。
+  if (!loadState()) {
+    newGame(currentDifficultyId || DIFFICULTIES[0].id);
+  }
 })(window);

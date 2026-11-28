@@ -1381,6 +1381,62 @@ code {
   box-shadow: 0 0 0 2px var(--success), 0 0 12px rgba(43, 148, 87, 0.5);
 }
 
+/* ==========================================================================
+   Breakout
+   ========================================================================== */
+
+.bk {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.bk .panel {
+  width: min(100%, 440px);
+}
+
+.bk__stage {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.bk__canvas {
+  display: block;
+  /* 宽高比由 JS 按设备写入 --bk-ratio（竖版 3/4，桌面横版 4/3） */
+  aspect-ratio: var(--bk-ratio, 3 / 4);
+  width: min(100%, 440px);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  background: var(--surface-2);
+  touch-action: none;
+  /* 指针移到长方形游戏区里就藏起来，避免遮挡落点（触屏无影响） */
+  cursor: none;
+}
+
+.bk__pad {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.bk__pad .btn {
+  width: 72px;
+  min-height: 52px;
+  font-size: 1.25rem;
+}
+
+/* 宽屏幕 + 精确指针（鼠标）时不需要屏幕按钮 */
+@media (hover: hover) and (pointer: fine) and (min-width: 620px) {
+  .bk__pad { display: none; }
+}
+
 /* ---------- Responsive tuning ---------- */
 
 @media (max-width: 560px) {

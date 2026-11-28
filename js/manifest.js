@@ -162,5 +162,20 @@ window.FUN_GAMES = [
         return FunGamesUI.formatClock(v.value) + ' · ' + v.size;
       }
     }
+  },
+  {
+    id: 'breakout',
+    title: '打砖块',
+    description: '控制挡板反弹小球，击碎全部砖块，五关递进难度。',
+    icon: '🏓',
+    href: 'games/breakout.html',
+    tags: ['街机', '经典', '反应'],
+    best: {
+      key: 'breakout:best',
+      label: '最高分数',
+      format: function (v) {
+        return Number(v).toLocaleString('zh-CN');
+      }
+    }
   }
 ];
